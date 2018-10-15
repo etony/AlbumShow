@@ -1,0 +1,208 @@
+
+{% extends 'base.html' %}
+{%  from 'macro.html' import pagination_show, user_profile with  context %}
+{% block title %}图片列表{% endblock %}
+
+{% block content %}
+    {{ user_profile(current_user) }}
+
+    <br>
+
+
+    <div class="row">
+        <div class="col-md-12">
+        <!--
+            {% for i in range(6) %}
+
+			<div class="photo-card card">
+                    <img width="200"  class="img-thumbnail" src="/static/images/tim{{ i+1 }}.jpg" src2="/static/images/tim{{ i+1 }}.jpg" onclick="showMaxImg(this)" >
+				<div class="card-body">
+					<img src="{{ url_for('static', filename='images/rate.png') }}" > 22
+					<img src="{{ url_for('static', filename='images/comment.png') }}" > 222
+				</div>
+			</div>
+            {% endfor %}
+        -->
+        {% for photo in photos %}
+            <div class="photo-card card">
+                <div style="height: 200px; width: 200px;vertical-align:text-bottom;" >
+                    <img style="vertical-align:bottom;"   class="img-thumbnail" src="{{ url_for('static', filename='upload/s_'+ photo.filename) }}" src2 ="{{ url_for('static', filename='upload/'+ photo.filename) }}" onclick="showMaxImg(this)" >
+                </div>
+
+				<div class="card-body" >
+                    <img src="{{ url_for('static', filename='images/rate.png') }}" onclick="upup('{{ photo.id }}')" > <a id="{{ photo.id }}">{{ photo.flag }}</a>
+					<img src="{{ url_for('static', filename='images/comment.png') }}"  onclick="putComment('{{ photo.id }}')" >{{  photo.comments.all()|count }}
+				</div>
+			</div>
+        {% endfor %}
+		</div>
+    </div><br/>
+
+
+
+
+
+<div align="center">
+    总页数：{{ paginate.pages }}
+    总共有{{ paginate.total }}条数据
+    当前页数：{{ paginate.page }}
+
+    {% if paginate.has_prev %}
+        <a href="{{ url_for('viewModule.vlist') }}?page={{ paginate.prev_num }}">上一页:</a>
+    {% endif %}
+    当前的页数：{{ paginate.page }}
+    {% if paginate.has_next %}
+         <a href="{{ url_for('viewModule.vlist') }}?page={{ paginate.next_num }}">下一页:</a>
+    {% endif %}
+    页码：{%  for i in  paginate.iter_pages() %}
+    <a href="{{ url_for('viewModule.vlist') }}?page={{ i }}">{{ i }}</a>
+    {% endfor %}
+
+{{ pagination_show(paginate, 'viewModule.vlist') }}
+
+</div>
+
+<!-- 显示大图 模态框 -->
+<div class="modal fade bs-example-modal-lg text-center " id="imgModal" tabindex="-1" role="dialog" data-toggle="modal" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-lg" style="display:inline-block;width:auto;">
+       <div class="modal-content">
+        <!-- 模态框头部 -->
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <!-- 模态框主体 -->
+        <div class="modal-body">
+           <div id="imgshow"></div>
+            <div hidden><input type="text" size="75" id="id" value=""> </div>
+            <div id="imgurl"></div>
+        </div>
+
+        <!-- 模态框底部 -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button> {# data-dismiss="modal" 点击关闭当前弹窗 #}
+        </div>
+
+        </div>
+      </div>
+    </div>
+
+
+
+ <!-- 图片评价 模态框 -->
+  <div class="modal fade" id="commentModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <!-- 模态框头部 -->
+        <div class="modal-header">
+          <h4 class="modal-title">评价</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <!-- 模态框主体 -->
+        <div class="modal-body" >
+          <form method="post" id="myPutComment">
+              <input type="text" name="photoid" id="putComment" hidden>
+              <textarea rows="2" cols="60" name="putComment" placeholder="评价内容" onkeyup="countNum(this)"></textarea>
+          </form>
+        </div>
+         <div id="countNum" style="color: red"></div>
+        <!-- 模态框底部 -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="postComment()" id="plshbtn" style="display: none">提交</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+<script>
+//显示大图脚本
+function showMaxImg(obj){
+   var src=$(obj).attr("src2");
+	$("#imgModal").find("#imgshow").html("<img src='"+src+"' class='carousel-inner img-responsive img-rounded'  >");
+	$("#imgModal").modal('show');
+	$("#id").val(src)
+    $("#imgModal").find("#imgurl").html("<a href='"+src+"' class='btn btn-primary my-2' target='_blank' >查看原图</a>");
+}
+
+//图片评价模态框
+function putComment(photoid){
+
+	$("#commentModal").modal('show');
+	$("#putComment").val(photoid)
+   
+}
+//图片评价提交
+function postComment(){
+    var formData = new FormData($('#myPutComment')[0]); //[0]指第一<form></form>
+
+    $.ajax({
+        url:"/viewModule/addComment/",
+        type: "POST",
+        data: formData,
+        async: true,
+        cashe: false,
+        contentType:false,
+        processData:false,
+        success:function (returndata) {
+            //alert(returndata)
+            window.location.reload()
+    　　　　},
+    　　error: function (returndata) {
+    　　　　　alert("留言失败！")
+
+    　　}})
+}
+
+//提交点赞
+function upup(photoid){
+
+    $.ajax({
+            type :"GET",
+            url : "/viewModule/upup/" + photoid,
+            dataType:"html",
+            success : function(data) {//返回数据根据结果进行相应的处理
+                $("[id="+photoid+"]").html(data);
+            },
+            error:function(){
+                $("#number").html();
+            }
+        });
+}
+
+//输入框输入汉字数提示
+ function countNum(e){
+    var value=$(e).val();
+    var cArr = value.match(/([\u0391-\uffe5])/ig); // 返回中文的字符
+    var num=Math.floor((30-value.length-2*(cArr == null ? 0 : cArr.length))/3);
+    if(num>0){
+        $("#countNum").text('至少还应输入'+ num +'个汉字');
+        $("#plshbtn").attr("style","display:none;");
+    }else{
+        $("#countNum").text('');
+        $("#plshbtn").attr("style","display:block;");
+    }
+}
+</script>
+
+<style> #commentModal { top: 25%; } </style>
+<style> #imgModal { top:5%; } </style>
+{% endblock %}
+
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col-md-8">
+                <img src="{{ url_for('static', filename='images/index.jpg') }}" class="rounded img-fluid">
+            </div>
+            <div class="col-md-4 align-self-center">
+                <h1>图片秀</h1>
+                <p>记录每一个精彩时刻.</p>
+                <p><a class="btn btn-primary btn-lg" href="{{ url_for('loginModule.login') }}">加入</a></p>
+            </div>
+        </div>
+    </div>
+# 分页 https://blog.csdn.net/liuredflash/article/details/79672592

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}settings{% endblock %}
+
+{% block content %}
+    <div> <h4> 用户设置 </h4> </div><br/>
+        <div class="row">
+
+            <div class="col-md-4">
+                <div class="card mb-3 w-100 bg-light">
+
+                    <div class="card-body">
+                         <ul class="nav nav-pills flex-column">
+                            <li class="nav-item">
+                              <a class="nav-link " href="#">用户信息</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link active" href="{{ url_for('loginModule.settings') }}">修改密码</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link" href="{{ url_for('loginModule.settings_picture') }}">修改头像</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link disabled" href="#">Disabled</a>
+                            </li>
+                          </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card mb-3 w-100 bg-light">
+                    <div class="card-header"><h4>修改密码</h4></div>
+                    <div class="card-body">
+                        <form method="POST" class="form-horizontal">
+
+                            {{ form.csrf_token }}
+                            <div class="card-columns">{{ form.old_password.label }}{{ form.old_password }}</div>
+                             {% for error in form.old_password.errors %}
+                                 <span style="color: red;">{{ error }}</span>
+                             {% endfor %}
+                            <div class="card-columns">{{ form.password.label }}{{ form.password }}</div>
+                             {% for error in form.password.errors %}
+                                 <span style="color: red;">{{ error }}</span>
+                             {% endfor %}
+                            <div class="card-columns">{{ form.password2.label }}{{ form.password2 }}</div>
+                             {% for error in form.password2.errors %}
+                                 <span style="color: red;">{{ error }}</span>
+                             {% endfor %}<br/>
+                            <div class="card-columns">{{ form.submit }}</div>
+
+
+
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

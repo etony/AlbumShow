@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    
+        <div class="row">
+            <div class="col-md-8">
+                <img src="{{ url_for('static', filename='images/index.jpg') }}" class="rounded img-fluid">
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3 w-100 bg-light">
+                    <div class="card-header"><h4>登录图片秀</h4></div>
+                    <div class="card-body">
+                        <form method="POST" class="form-horizontal">
+                            {{ form.csrf_token }}
+                            <div class="form-group">
+
+                                <label for="inputEmail3" class="col-sm-4 control-label">{{ form.email.label }}</label>
+                                <div class="col-sm-8">
+                                {{ form.email }}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPassword3" class="col-sm-4 control-label">{{ form.password.label }}</label>
+                                <div class="col-sm-8">
+                                {{ form.password }}
+                                </div>
+                            </div>
+                             <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                  <div class="checkbox">
+                                    <label>
+                                      {{ form.remember_me }} {{ form.remember_me.label }}
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                {{ form.submit }}
+                                </div>
+                            </div>
+
+                        </form>
+                        <hr>
+                        <p class="small"><a href="{{ url_for('loginModule.register') }}">注册账号</a></p>
+                        <p class="small"><a href="{{ url_for('loginModule.logout') }}">找回密码</a></p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

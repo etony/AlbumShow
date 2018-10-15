@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}修改用户信息{% endblock %}
+
+{% block content %}
+    {% if current_user.is_authenticated %}
+    <form method="POST" class="form-horizontal">
+        {{ form.csrf_token }}
+        {{ form.name }}
+        {{ form.password }}
+         {{ form.submit }}
+
+    </form>
+    {% else %}
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-md-8">
+                    <img src="{{ url_for('static', filename='images/index.jpg') }}" class="rounded img-fluid">
+                </div>
+                <div class="col-md-4 align-self-center">
+                    <h1>图片秀</h1>
+                    <p>记录每一个精彩时刻.</p>
+                    <p><a class="btn btn-primary btn-lg" href="{{ url_for('loginModule.login') }}">加入</a></p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

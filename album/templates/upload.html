@@ -1,0 +1,125 @@
+
+{% extends 'base.html' %}
+{%  from 'macro.html' import  user_profile with  context %}
+{% block title %}图片列表{% endblock %}
+{% block username %}<img width="25" class="img-fluid rounded" src="{{ url_for('static', filename='images/user.jpg') }}">{% endblock %}
+{% block content %}
+
+    {{ user_profile(current_user) }}
+
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-10" >
+
+            <div class="card-body">
+                <form method="POST" enctype=multipart/form-data class="form-horizontal">
+                    <div class="form-group">
+                    {{ form.csrf_token }}
+                     {{ form.photo.label }}   &nbsp;&nbsp;  {{ form.photo }}   &nbsp;&nbsp;  {{ form.submit }}
+                     </div>
+                </form>
+            </div>
+            <div  align="left">
+
+            <table  align="center">
+              <tr>
+                <th>序号</th>
+                <th>描述</th>
+                <th>图片</th>
+              </tr>
+
+                {% for photo in myphotos %}
+                    <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ photo.description }}</td><td>{{ photo.filename }} </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            </div>
+        </div>
+     {% for error in form.photo.errors %}
+         <span style="color: red;">{{ error }}</span>
+     {% endfor %}
+
+
+
+    </div>
+</div>
+     <br>
+
+<style>
+    th2{
+        width:100%;
+        word-break:keep-all;/* 不换行 */
+        white-space:nowrap;/* 不换行 */
+        overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
+
+    }
+    td2{
+        width:100%;
+        word-break:keep-all;/* 不换行 */
+        white-space:nowrap;/* 不换行 */
+        overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
+
+    }
+    body {
+	    background-attachment: fixed;
+	    background-image: url('/static/timg.png');
+	    background-position: left bottom;
+        background-repeat:no-repeat ;
+    }
+    a:link {
+        color:#0000FF;
+        text-decoration:none;
+    }
+    a:visited {
+        color:#0000FF;
+        text-decoration:none;
+    }
+    a:hover {
+        color:#000000;
+        text-decoration:none;
+    }
+    a:active {
+        color:#FFFFFF;
+        text-decoration:none;
+    }
+    table tr th {
+        word-break: keep-all;
+        white-space: normal;
+        border:1px solid #151515;
+        width: 100px;
+        background-color: #e0e0e0;
+
+    }
+    table tr td {
+        border:1px solid #151515;
+        word-break:keep-all;
+        white-space:nowrap;
+        min-width: 35px }
+    table {
+        text-align: center;
+        border-collapse: collapse;
+        border:1px solid #151515;
+        word-break:keep-all;
+        white-space:nowrap; }
+
+
+    table tr:nth-child(odd) {
+        background-color: #f0f0f0;
+    }
+
+    table tr:nth-child(even) {
+        background-color:#fff;
+    }
+    hr {
+        height:1px;
+        border:none;
+        border-top:1px solid #555555;
+        width: 80%;
+    }
+</style>
+{% endblock %}

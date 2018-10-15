@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}settings{% endblock %}
+
+{% block content %}
+    <div> <h4> 用户设置 </h4> </div><br/>
+        <div class="row">
+
+            <div class="col-md-4">
+                <div class="card mb-3 w-100 bg-light">
+
+                    <div class="card-body">
+                         <ul class="nav nav-pills flex-column">
+                            <li class="nav-item">
+                              <a class="nav-link " href="#">用户信息</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link " href="{{ url_for('loginModule.settings') }}">修改密码</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link active" href="{{ url_for('loginModule.settings_picture') }}">修改头像</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link disabled" href="#">Disabled</a>
+                            </li>
+                          </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card mb-3 w-100 bg-light">
+                    <div class="card-header"><h4>修改头像</h4></div>
+                    <div class="card-body">
+                        <form id="uploadForm" method="POST" enctype=multipart/form-data class="form-horizontal">
+
+                            {{ form.csrf_token }}
+
+                            <div class="card-columns">
+                                {{ form.image.label }}{{ form.image }}
+                            </div>
+                             {% for error in form.image.errors %}
+                                 <span style="color: red;">{{ error }}</span>
+                             {% endfor %}<br/>
+
+                            <div class="card-columns " hidden>{{ form.submit }}</div>
+                            <div class="card-columns"><input type="button" value="上传" id="upFileBtn" onclick="up_file()" class="btn btn-primary"></div>
+
+                        </form>
+                    <br>
+                        <div class="row">
+                            <div class="col-md-8" id="myphoto">
+                                <img src="{{ url_for('static', filename=current_user.picture) }}">
+                            </div>
+                            <div class="col-md-4" id="myphotos">
+                                <img src="{{ url_for('static', filename=current_user.picture_s) }}">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <script>
+    function up_file() {
+        var formData = new FormData($('#uploadForm')[0]); //[0]指第一<form></form>
+
+$.ajax({
+    url:"/loginModule/settings/picture/",
+    type: "POST",
+    data: formData,
+    async: true,
+    cashe: false,
+    contentType:false,
+    processData:false,
+    success:function (returndata) {
+        $("[id=myphoto]").html('<img src="/static/upload/'+returndata+'">');
+        $("[id=myphotos]").html('<img src="/static/upload/s_'+returndata+'">');
+　　},
+　　error: function (returndata) {
+　　　　　alert("请选择上传图片！")
+
+　　}})
+    }
+    </script>
+{% endblock %}

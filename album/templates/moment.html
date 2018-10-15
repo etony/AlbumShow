@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script   src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+            {{ moment.include_moment() }}
+            {{moment.locale('zh-cn')}}
+</head>
+<body>
+注册： {{  moment().calendar() }}
+<br>
+{{ moment(current_time).fromNow() }}
+</body>
+</html>
