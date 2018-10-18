@@ -28,14 +28,16 @@ class LoginForm(FlaskForm):
 
 
 class registerForm(FlaskForm):
-    name = StringField('用户', validators=[DataRequired(), Length(1, 30)])
+    name = StringField('用户', validators=[DataRequired(), Length(1, 30)],render_kw={
+            'placeholder': u'昵称'})
     username = StringField(
         '账户',
         validators=[
             DataRequired(),
             Length(1, 20),
             Regexp('^[a-zA-Z0-9]*$', message='账户只能包含 a-z, A-Z 和 0-9.')
-        ])
+        ],render_kw={
+            'placeholder': u'用户ID'})
     email = StringField(
         'Email: ',
         validators=[DataRequired(), Length(1, 254),
@@ -56,9 +58,38 @@ class registerForm(FlaskForm):
         })
     password2 = PasswordField(
         '确认密码', validators=[DataRequired(),
-                            Length(min=6, message='密码应不少于6位')])
+                            Length(min=6, message='密码应不少于6位')],render_kw={
+            'placeholder': u'再次输入密码'})
     submit = SubmitField('注册', render_kw={'class': "btn btn-default"})
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('该email已注册.')
+
+class resetForm(FlaskForm):
+    email = StringField(
+        '注册邮箱: ',
+        validators=[DataRequired(), Length(1, 254),
+                    Email()],
+        render_kw={
+            'placeholder': u'输入注册邮箱',
+            'class': "form-control",
+            'id': "inputEmail3"
+        })
+    submit = SubmitField('找回密码', render_kw={'class': "btn btn-default"})
+
+class resetPassForm(FlaskForm):
+    password = PasswordField(
+        '密码: ',
+        validators=[DataRequired(),
+                    EqualTo('password2', '密码填入的不一致')],
+        render_kw={
+            'placeholder': u'输入密码',
+            'class': "form-control",
+            'id': "inputPassword3"
+        })
+    password2 = PasswordField(
+        '确认密码', validators=[DataRequired(),
+                            Length(min=6, message='密码应不少于6位')],render_kw={
+            'placeholder': u'再次输入密码'})
+    submit = SubmitField('更新密码', render_kw={'class': "btn btn-default"})

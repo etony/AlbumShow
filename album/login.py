@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from forms.loginform import LoginForm, registerForm
+from forms.loginform import LoginForm, registerForm, resetForm, resetPassForm
 from forms.userform import ChangePasswordForm, UploadPictureForm
 from forms.uploadform import uploadForm
 from forms.userform import userForm
@@ -9,12 +9,14 @@ from werkzeug.utils import secure_filename
 from album import db, app
 from PIL import Image
 
-from utils import rename_image, get_filenamewithoutext
+from utils import rename_image, get_filenamewithoutext, set_mail
 from forms.uploadform import photos
 import os
 from flask_login import login_user, logout_user, login_required, current_user, login_fresh, confirm_login
 from wtforms import ValidationError
 from datetime import datetime
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import SignatureExpired, BadSignature
 
 # loginModule = Blueprint('loginModule', __name__, static_folder='', static_url_path='')
 loginModule = Blueprint('loginModule', __name__)
@@ -35,6 +37,15 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user is not None:
             if security.check_password_hash(user.password_hash, passwd):
+                if user.locked != 0:
+                    flash('账号被锁定，请与管理员联系!')
+                    return redirect(url_for('loginModule.login'))
+                if user.active != 1:
+                    flash('账号未激活，请激活后重新登录!')
+                    return redirect(url_for('loginModule.login'))
+                if user.confirmed != 1:
+                    flash('账号未确认，请等待系统确认后重新登录!')
+                    return redirect(url_for('loginModule.login'))
                 login_user(user, loginform.remember_me.data)
                 flash('登录成功！')
 
@@ -61,7 +72,13 @@ def register():
             email = registerform.email.data
             username = registerform.username.data
             password = registerform.password.data
-            user = User(name=name, userid=username, email=email)
+            user = User(
+                name=name,
+                userid=username,
+                email=email,
+                confirmed=0,
+                locked=0,
+                active=0)
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
@@ -76,6 +93,54 @@ def logout():
     logout_user()
     flash('用户退出!')
     return redirect(url_for('loginModule.login'))
+
+
+@loginModule.route("/reset/", methods=['GET', 'POST'])
+def reset():
+    resetform = resetForm()
+    if request.method == 'POST':
+        email = resetform.email.data
+        user = User.query.filter_by(email=email).first()
+        if user is not None:
+            user.active = 0
+            msg = set_mail(user)
+            db.session.commit()
+            flash(msg + '请登录注册邮箱，重新激活账号！')
+        else:
+            flash('邮箱不存在！')
+    return render_template('reset.html', form=resetform)
+
+
+@loginModule.route("/reset_password/<string:token>", methods=['GET', 'POST'])
+def reset_password(token):
+    resetpassform = resetPassForm()
+    s = Serializer(app.config['SECRET_KEY'])
+
+    try:
+        data = s.loads(token)
+        email = data.get('email')
+        if resetpassform.validate_on_submit():
+            password = resetpassform.password.data
+            user = User.query.filter_by(email=email).first()
+            user.set_password(password)
+            if user.active == 1:
+                flash('验证码失效，密码更新失败！')
+                return redirect(url_for('loginModule.login'))
+            user.active = 1
+            user.confirmed = 1
+            user.locked = 0
+            db.session.commit()
+            flash('密码已更新！')
+            return redirect(url_for('loginModule.login'))
+    except SignatureExpired:
+        #except (SignatureExpired, BadSignature) as e:
+        flash('验证码过期！')
+        return redirect(url_for('loginModule.login'))
+    except BadSignature:
+        flash('签名验证失败！')
+        return redirect(url_for('loginModule.login'))
+
+    return render_template('reset_pass.html', form=resetpassform)
 
 
 @loginModule.route("/upload", methods=['GET', 'POST'])
@@ -183,6 +248,7 @@ def file_size_too_large(error):
     flash(msg)
     return redirect(url_for('.upload'))
 
+
 @loginModule.route("/moment/")
 def moment():
-    return render_template('moment.html',current_time=datetime.utcnow())
+    return render_template('moment.html', current_time=datetime.utcnow())
