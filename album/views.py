@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for,flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models import Photo, photoComment
 from flask_login import login_required, current_user
 from album import db
@@ -37,6 +37,7 @@ def upup(photo_id):
 def vshow():
     return "图片细节"
 
+
 @viewModule.route("/addComment/", methods=['GET', 'POST'])
 def addComment():
     if request.method == 'POST':
@@ -44,7 +45,7 @@ def addComment():
         comment = request.form['putComment']
         if len(comment) <= 10:
             return "留言失败！"
-        comment = photoComment(photoid=photoid,comment= comment)
+        comment = photoComment(photoid=photoid, comment=comment)
         db.session.add(comment)
         db.session.commit()
         return "留言成功！"

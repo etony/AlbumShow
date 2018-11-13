@@ -12,6 +12,7 @@
             <link rel="stylesheet" href="{{ url_for('static', filename='css/open-iconic-bootstrap.css') }}">
             <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
             <link rel="stylesheet" href="{{ url_for('static', filename='css/pack.css') }}">
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.Jcrop.min.css') }}">
 
             <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"></script>
@@ -21,7 +22,6 @@
             {% block script %}{% endblock %}
             {{ moment.include_moment() }}
             {{moment.locale('zh-cn')}}
-
 
 </head>
 

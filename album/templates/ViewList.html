@@ -25,21 +25,18 @@
         -->
         {% for photo in photos %}
             <div class="photo-card card">
-                <div style="height: 200px; width: 200px;vertical-align:text-bottom;" >
-                    <img style="vertical-align:bottom;"   class="img-thumbnail" src="{{ url_for('static', filename='upload/s_'+ photo.filename) }}" src2 ="{{ url_for('static', filename='upload/'+ photo.filename) }}" onclick="showMaxImg(this)" >
+                <div style="height: 200px; width: 200px;vertical-align:text-bottom;" align="center">
+                    <img style="vertical-align:bottom;"   class="img-thumbnail" src="{{ url_for('static', filename=photo.filename_s) }}" src2 ="{{ url_for('static', filename='upload/'+ photo.filename) }}" onclick="showMaxImg(this)" >
                 </div>
-
+                <div >{{ photo.description }}</div>
 				<div class="card-body" >
-                    <img src="{{ url_for('static', filename='images/rate.png') }}" onclick="upup('{{ photo.id }}')" > <a id="{{ photo.id }}">{{ photo.flag }}</a>
-					<img src="{{ url_for('static', filename='images/comment.png') }}"  onclick="putComment('{{ photo.id }}')" >{{  photo.comments.all()|count }}
+                    <img src="{{ url_for('static', filename='images/rate.png') }}" onclick="upup('{{ photo.id }}')" > <a id="{{ photo.id }}">{{ photo.flag }}</a>&nbsp;&nbsp;
+					<img src="{{ url_for('static', filename='images/comment.png') }}"  onclick="putComment('{{ photo.id }}')" > {{  photo.comments.all()|count }}
 				</div>
 			</div>
         {% endfor %}
 		</div>
     </div><br/>
-
-
-
 
 
 <div align="center">

@@ -3,7 +3,8 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash
 
-class User(db.Model,UserMixin):
+
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     userid = db.Column(db.String(20), unique=True, index=True)
@@ -20,8 +21,10 @@ class User(db.Model,UserMixin):
     picture = db.Column(db.String(100), default='images/timg.jpg')
     picture_s = db.Column(db.String(100), default='images/user.jpg')
 
-    def set_password(self,password):
-        self.password_hash = generate_password_hash(password,method='pbkdf2:sha256',salt_length=8)
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(
+            password, method='pbkdf2:sha256', salt_length=8)
+
 
 class Photo(db.Model):
     __tablename__ = 'photos'
@@ -36,6 +39,7 @@ class Photo(db.Model):
     author_id = db.Column(db.String(20), db.ForeignKey('users.userid'))
     comments = db.relationship('photoComment', backref='Photo', lazy='dynamic')
 
+
 class SysLog(db.Model):
     __tablename__ = 'syslog'
     id = db.Column(db.Integer, primary_key=True)
@@ -47,11 +51,13 @@ class SysLog(db.Model):
     )
     operContent = db.Column(db.String(300))
 
+
 class photoComment(db.Model):
     __tablename__ = 'photocomment'
     id = db.Column(db.Integer, primary_key=True)
     photoid = db.Column(db.Integer, db.ForeignKey('photos.id'))
     comment = db.Column(db.String(500))
+
 
 # set FLASK_APP=manager.py
 # flask shell

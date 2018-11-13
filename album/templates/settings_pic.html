@@ -2,6 +2,7 @@
 {% block title %}settings{% endblock %}
 
 {% block content %}
+
     <div> <h4> 用户设置 </h4> </div><br/>
         <div class="row">
 
@@ -48,10 +49,12 @@
                     <br>
                         <div class="row">
                             <div class="col-md-8" id="myphoto">
-                                <img src="{{ url_for('static', filename=current_user.picture) }}">
+                                <img src="{{ url_for('static', filename=current_user.picture) }} " >
                             </div>
                             <div class="col-md-4" id="myphotos">
-                                <img src="{{ url_for('static', filename=current_user.picture_s) }}">
+                                <div class="preview-box" style="width: 200px; height: 200px; overflow: hidden;">
+                                <img src="{{ url_for('static', filename=current_user.picture_s) }}"  >
+                                </div>
                             </div>
                         </div>
 
@@ -73,7 +76,7 @@ $.ajax({
     contentType:false,
     processData:false,
     success:function (returndata) {
-        $("[id=myphoto]").html('<img src="/static/upload/'+returndata+'">');
+        $("[id=myphoto]").html('<img src="/static/upload/'+returndata+'" >');
         $("[id=myphotos]").html('<img src="/static/upload/s_'+returndata+'">');
 　　},
 　　error: function (returndata) {
@@ -82,4 +85,7 @@ $.ajax({
 　　}})
     }
     </script>
+
+
+
 {% endblock %}

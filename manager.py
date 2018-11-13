@@ -1,4 +1,5 @@
 # https://github.com/greyli/albumy
+
 from flask import redirect, url_for, flash
 from album.login import loginModule
 from album.views import viewModule

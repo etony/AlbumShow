@@ -45,7 +45,8 @@
                              {% for error in form.password2.errors %}
                                  <span style="color: red;">{{ error }}</span>
                              {% endfor %}<br/>
-                            <div class="card-columns">{{ form.submit }}</div>
+                            <div class="card-columns">{{ form.submit }}</div><br>
+                            <div class="card-group"><small style="color: #0000FF">#密码应该包含大小写字母、数字、符号，长度不小于8位#</small></div>
 
 
 

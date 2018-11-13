@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{%  from 'macro.html' import  user_profile with  context %}
+{% block title %}图片列表{% endblock %}
+{% block username %}<img width="25" class="img-fluid rounded" src="{{ url_for('static', filename='images/user.jpg') }}">{% endblock %}
+{% block content %}
+
+    {{ user_profile(current_user) }}
+
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="photo-card ">
+            <img src="{{ url_for('static', filename='upload/'+photo.filename) }}" id="crop-box" width="{{ prop }}" >
+            </div>
+        </div>
+
+
+
+        <div class="col-md-4" >
+            <div class="photo-card ">
+
+                <div id="preview-box">
+                    <div class="col-md-4" id="myphotos">
+                        <div class="preview-box" style="width: 200px; height: 200px; overflow: hidden;">
+                        <img src="{{ url_for('static', filename='upload/'+photo.filename) }}" id="crop-box">
+                        </div>
+
+                    </div>
+
+                    <div class="photo-card " style="vertical-align: bottom">
+                        <br /><br />
+                        <div>
+                            <img src="{{ url_for('static', filename=photo.filename_s) }}" id="crop-box" width="220">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="card-body" >
+                <form method="POST"  class="form-horizontal">
+                    <div class="form-group">
+                    {{ form.csrf_token }}
+                     {{ form.x }}  {{ form.y }}  {{ form.w }}  {{ form.h }}   {{ form.submit }}  &nbsp;  <a href="{{ url_for('loginModule.upload') }}" class="btn btn-outline-secondary">返 回</a>
+                     </div>
+                </form>
+            </div>
+
+
+
+    </div>
+</div>
+     <br>
+
+<script src="/static/js/jquery.Jcrop.min.js"></script>
+
+<script type="text/javascript">
+    jQuery(function ($) {
+      // Create variables (in this scope) to hold the API and image size
+      var jcrop_api,
+          boundx,
+          boundy,
+
+          // Grab some information about the preview pane
+          $preview = $('#preview-box'),
+          $pcnt = $('#preview-box .preview-box'),
+          $pimg = $('#preview-box .preview-box img'),
+
+          xsize = $pcnt.width(),
+          ysize = $pcnt.height();
+
+      $('#crop-box').Jcrop({
+        onChange: updatePreview,
+        onSelect: updateCoords,
+        setSelect: [0, 0, 50, 50],
+        //aspectRatio: 1  #选框宽高比。说明：width/height 设置此参数， 则固定宽高比
+      }, function () {
+        // Use the API to get the real image size
+        var bounds = this.getBounds();
+        boundx = bounds[0];
+        boundy = bounds[1];
+        // Store the API in the jcrop_api variable
+        jcrop_api = this;
+
+        jcrop_api.focus();
+        // Move the preview into the jcrop container for css positioning
+        $preview.appendTo(jcrop_api.ui.holder);
+      });
+
+      function updatePreview(c) {
+        if (parseInt(c.w) > 0) {
+          var rx = xsize / c.w;
+          var ry = ysize / c.h;
+          $pimg.css({
+            width: Math.round(rx * boundx) + 'px',
+            height: Math.round(ry * boundy) + 'px',
+            marginLeft: '-' + Math.round(rx * c.x) + 'px',
+            marginTop: '-' + Math.round(ry * c.y) + 'px'
+          });
+        }
+      }
+    });
+
+    function updateCoords(c) {
+      $('#x').val(c.x);
+      $('#y').val(c.y);
+      $('#w').val(c.w);
+      $('#h').val(c.h);
+    }
+  </script>
+{% endblock %}

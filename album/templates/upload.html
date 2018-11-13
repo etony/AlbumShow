@@ -18,33 +18,40 @@
                 <form method="POST" enctype=multipart/form-data class="form-horizontal">
                     <div class="form-group">
                     {{ form.csrf_token }}
-                     {{ form.photo.label }}   &nbsp;&nbsp;  {{ form.photo }}   &nbsp;&nbsp;  {{ form.submit }}
+                     {{ form.photo.label }}   &nbsp;&nbsp;  {{ form.photo }}   <br/>
+                        {{ form.description.label }}   &nbsp;&nbsp;  {{ form.description }}   &nbsp;&nbsp;  {{ form.submit }}
                      </div>
                 </form>
             </div>
             <div  align="left">
-
-            <table  align="center">
+            {% if myphotos.count() > 0 %}
+            <table  align="left" width="700">
               <tr>
-                <th>序号</th>
-                <th>描述</th>
-                <th>图片</th>
+                <th width="100">序号</th>
+                <th width="200">描述</th>
+                <th width="300">图片</th>
+                <th width="100">操作</th>
               </tr>
 
                 {% for photo in myphotos %}
                     <tr>
                     <td>{{ loop.index }}</td>
-                    <td>{{ photo.description }}</td><td>{{ photo.filename }} </td>
+                    <td>{{ photo.description }}</td>
+                    <td>{{ photo.filename }} </td>
+                        <td>
+                            <a href ='{{ url_for('loginModule.picture_crop', photoid = photo.filename) }}' class="btn-light">调整</a>  &nbsp;
+                            <a href="{{ url_for('loginModule.picture_del', photoid = photo.filename) }}" class="btn-light" onclick="return confirm('确定将此记录删除?')">删除</a>
+                            <a href="{{ url_for('loginModule.watermark', photoid = photo.filename) }}" class="btn-light" >生成</a>
+                        </td>
                     </tr>
                 {% endfor %}
             </table>
+            {% endif %}
             </div>
         </div>
      {% for error in form.photo.errors %}
          <span style="color: red;">{{ error }}</span>
      {% endfor %}
-
-
 
     </div>
 </div>
@@ -122,4 +129,15 @@
         width: 80%;
     }
 </style>
+    <script>
+    function del() {
+        var msg = "您真的确定要删除吗？\n\n请确认！";
+        if (confirm(msg)==true){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    </script>
 {% endblock %}
